@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: redis-performance
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:redis}
+  datasource:
+    url: "jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:redis_performance}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+    username: ${MYSQL_USER:app}
+    password: ${MYSQL_PASSWORD:app}
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
