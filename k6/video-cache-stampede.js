@@ -3,6 +3,7 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 const baseUrl = __ENV.BASE_URL || 'http://localhost:8080';
+const videoId = __ENV.VIDEO_ID || '900001';
 
 export const options = {
 	scenarios: {
@@ -17,18 +18,10 @@ export const options = {
 };
 
 export function setup() {
-	const member = http.post(`${baseUrl}/members`, JSON.stringify({ name: 'k6-member' }), jsonParams());
-	check(member, { 'member created': (response) => response.status === 201 });
-
-	const video = http.post(
-		`${baseUrl}/videos`,
-		JSON.stringify({ memberId: member.json('id'), title: 'k6-video', description: 'cache stampede test' }),
-		jsonParams(),
-	);
-	check(video, { 'video created': (response) => response.status === 201 });
-
-	const videoId = video.json('id');
-	http.get(`${baseUrl}/videos/${videoId}`);
+	const response = http.get(`${baseUrl}/videos/${videoId}`);
+	if (!check(response, { 'seed video lookup succeeds': (result) => result.status === 200 })) {
+		throw new Error(`Seed video ${videoId} is not available. Run k6/seed-video-cache-stampede.sql first.`);
+	}
 	sleep(31);
 
 	return { videoId, dbLoadBefore: databaseLoadCount() };
@@ -43,10 +36,6 @@ export function teardown(data) {
 	sleep(2);
 	const dbLoadAfter = databaseLoadCount();
 	console.log(`video.find.by.id DB load delta: ${dbLoadAfter - data.dbLoadBefore}`);
-}
-
-function jsonParams() {
-	return { headers: { 'Content-Type': 'application/json' } };
 }
 
 function databaseLoadCount() {
