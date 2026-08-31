@@ -11,10 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
-import dev.backend.redis_performance.domain.Member;
-import dev.backend.redis_performance.domain.Video;
 import dev.backend.redis_performance.service.ResourceNotFoundException;
 import dev.backend.redis_performance.service.VideoService;
+import dev.backend.redis_performance.service.dto.VideoDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -34,7 +33,7 @@ class VideoControllerTest {
 	@Test
 	void createsVideo() throws Exception {
 		given(videoService.create(anyLong(), anyString(), anyString()))
-			.willReturn(new Video(new Member("chan"), "redis", "performance test"));
+			.willReturn(createdVideoResponse());
 
 		mockMvc.perform(post("/videos")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -47,11 +46,22 @@ class VideoControllerTest {
 
 	@Test
 	void returnsVideoList() throws Exception {
-		given(videoService.findAll()).willReturn(List.of(new Video(new Member("chan"), "redis", "performance test")));
+		given(videoService.findAll()).willReturn(List.of(videoResponse()));
 
 		mockMvc.perform(get("/videos"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$[0].title").value("redis"));
+	}
+
+	@Test
+	void returnsVideoDetail() throws Exception {
+		given(videoService.findById(1L)).willReturn(videoResponse());
+
+		mockMvc.perform(get("/videos/1"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.id").value(1))
+			.andExpect(jsonPath("$.memberId").value(2))
+			.andExpect(jsonPath("$.title").value("redis"));
 	}
 
 	@Test
@@ -60,5 +70,13 @@ class VideoControllerTest {
 
 		mockMvc.perform(get("/videos/1"))
 			.andExpect(status().isNotFound());
+	}
+
+	private VideoDto videoResponse() {
+		return new VideoDto(1L, 2L, "redis", "performance test", 3L, 4L, null);
+	}
+
+	private VideoDto createdVideoResponse() {
+		return new VideoDto(1L, 2L, "redis", "performance test", 0L, 0L, null);
 	}
 }

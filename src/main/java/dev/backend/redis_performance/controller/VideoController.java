@@ -1,10 +1,10 @@
 // 동영상 생성과 조회 HTTP 요청을 처리하는 Controller
 package dev.backend.redis_performance.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-import dev.backend.redis_performance.domain.Video;
+import dev.backend.redis_performance.dto.VideoCreateRequest;
+import dev.backend.redis_performance.dto.VideoResponse;
 import dev.backend.redis_performance.service.VideoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,29 +41,4 @@ public class VideoController {
 		return VideoResponse.from(videoService.findById(id));
 	}
 
-	public record VideoCreateRequest(Long memberId, String title, String description) {
-	}
-
-	public record VideoResponse(
-		Long id,
-		Long memberId,
-		String title,
-		String description,
-		long viewCount,
-		long likeCount,
-		LocalDateTime createdAt
-	) {
-
-		private static VideoResponse from(Video video) {
-			return new VideoResponse(
-				video.getId(),
-				video.getMember().getId(),
-				video.getTitle(),
-				video.getDescription(),
-				video.getViewCount(),
-				video.getLikeCount(),
-				video.getCreatedAt()
-			);
-		}
-	}
 }

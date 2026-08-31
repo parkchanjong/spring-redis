@@ -1,10 +1,10 @@
 // 회원 생성과 조회 HTTP 요청을 처리하는 Controller
 package dev.backend.redis_performance.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-import dev.backend.redis_performance.domain.Member;
+import dev.backend.redis_performance.dto.MemberCreateRequest;
+import dev.backend.redis_performance.dto.MemberResponse;
 import dev.backend.redis_performance.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,13 +41,4 @@ public class MemberController {
 		return MemberResponse.from(memberService.findById(id));
 	}
 
-	public record MemberCreateRequest(String name) {
-	}
-
-	public record MemberResponse(Long id, String name, LocalDateTime createdAt) {
-
-		private static MemberResponse from(Member member) {
-			return new MemberResponse(member.getId(), member.getName(), member.getCreatedAt());
-		}
-	}
 }

@@ -26,3 +26,7 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+
+video:
+  cache:
+    enabled: ${VIDEO_CACHE_ENABLED:true}

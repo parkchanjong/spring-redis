@@ -5,6 +5,7 @@ import java.util.List;
 
 import dev.backend.redis_performance.domain.Member;
 import dev.backend.redis_performance.repository.MemberRepository;
+import dev.backend.redis_performance.service.dto.MemberDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,16 +20,19 @@ public class MemberService {
 	}
 
 	@Transactional
-	public Member create(String name) {
-		return memberRepository.save(new Member(name));
+	public MemberDto create(String name) {
+		return MemberDto.from(memberRepository.save(new Member(name)));
 	}
 
-	public List<Member> findAll() {
-		return memberRepository.findAll();
+	public List<MemberDto> findAll() {
+		return memberRepository.findAll().stream()
+			.map(MemberDto::from)
+			.toList();
 	}
 
-	public Member findById(Long id) {
+	public MemberDto findById(Long id) {
 		return memberRepository.findById(id)
+			.map(MemberDto::from)
 			.orElseThrow(() -> new ResourceNotFoundException("Member", id));
 	}
 }

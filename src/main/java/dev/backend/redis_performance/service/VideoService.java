@@ -7,6 +7,8 @@ import dev.backend.redis_performance.domain.Member;
 import dev.backend.redis_performance.domain.Video;
 import dev.backend.redis_performance.repository.MemberRepository;
 import dev.backend.redis_performance.repository.VideoRepository;
+import dev.backend.redis_performance.service.cache.VideoCacheService;
+import dev.backend.redis_performance.service.dto.VideoDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,25 +18,32 @@ public class VideoService {
 
 	private final MemberRepository memberRepository;
 	private final VideoRepository videoRepository;
+	private final VideoCacheService videoCacheService;
 
-	public VideoService(MemberRepository memberRepository, VideoRepository videoRepository) {
+	public VideoService(
+		MemberRepository memberRepository,
+		VideoRepository videoRepository,
+		VideoCacheService videoCacheService
+	) {
 		this.memberRepository = memberRepository;
 		this.videoRepository = videoRepository;
+		this.videoCacheService = videoCacheService;
 	}
 
 	@Transactional
-	public Video create(Long memberId, String title, String description) {
+	public VideoDto create(Long memberId, String title, String description) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new ResourceNotFoundException("Member", memberId));
-		return videoRepository.save(new Video(member, title, description));
+		return VideoDto.from(videoRepository.save(new Video(member, title, description)));
 	}
 
-	public List<Video> findAll() {
-		return videoRepository.findAll();
+	public List<VideoDto> findAll() {
+		return videoRepository.findAll().stream()
+			.map(VideoDto::from)
+			.toList();
 	}
 
-	public Video findById(Long id) {
-		return videoRepository.findById(id)
-			.orElseThrow(() -> new ResourceNotFoundException("Video", id));
+	public VideoDto findById(Long id) {
+		return VideoDto.from(videoCacheService.findById(id));
 	}
 }

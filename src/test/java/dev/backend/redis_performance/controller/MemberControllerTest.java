@@ -10,9 +10,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
-import dev.backend.redis_performance.domain.Member;
 import dev.backend.redis_performance.service.ResourceNotFoundException;
 import dev.backend.redis_performance.service.MemberService;
+import dev.backend.redis_performance.service.dto.MemberDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -31,7 +31,7 @@ class MemberControllerTest {
 
 	@Test
 	void createsMember() throws Exception {
-		given(memberService.create(anyString())).willReturn(new Member("chan"));
+		given(memberService.create(anyString())).willReturn(new MemberDto(1L, "chan", null));
 
 		mockMvc.perform(post("/members")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -42,7 +42,7 @@ class MemberControllerTest {
 
 	@Test
 	void returnsMemberList() throws Exception {
-		given(memberService.findAll()).willReturn(List.of(new Member("chan")));
+		given(memberService.findAll()).willReturn(List.of(new MemberDto(1L, "chan", null)));
 
 		mockMvc.perform(get("/members"))
 			.andExpect(status().isOk())
