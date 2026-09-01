@@ -232,6 +232,14 @@ K6_WEB_DASHBOARD=true k6 run k6/video-cache-stampede.js
 
 시나리오는 HTTP API로 회원과 동영상을 자동 생성한 뒤 해당 동영상의 캐시를 채우고, 31초를 기다려 stale 상태로 만듭니다. 이후 200개 동시 요청을 한 번씩 실행하며 종료 시 Actuator에서 DB 조회 Counter의 증가량을 출력합니다. 실행마다 테스트 회원과 동영상 데이터가 추가됩니다.
 
+Grafana 관측용 지속 부하에는 아래 시나리오를 사용합니다.
+
+```bash
+k6 run k6/video-cache-sustained.js
+```
+
+이 시나리오는 캐시를 채운 같은 동영상에 초당 50회씩 60초간 요청합니다. Prometheus는 Spring 애플리케이션을 1초마다 수집하며, Grafana는 영상 GET 요청률, DB 조회율, 선택 시간 범위의 DB 조회 증가량을 표시합니다. 캐시 활성·비활성 실행 결과는 이 세 지표로 비교합니다.
+
 ---
 
 ## 6. 테스트 전략

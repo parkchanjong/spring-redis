@@ -4,14 +4,15 @@ global:
 
 scrape_configs:
   - job_name: spring-application
+    scrape_interval: 1s
     metrics_path: /actuator/prometheus
     static_configs:
-      - targets: [host.docker.internal:8080]
+      - targets: ["host.docker.internal:8080"]
 
   - job_name: mysql
     static_configs:
-      - targets: [mysql-exporter:9104]
+      - targets: ["mysql-exporter:9104"]
 
   - job_name: redis
     static_configs:
-      - targets: [redis-exporter:9121]
+      - targets: ["redis-exporter:9121"]

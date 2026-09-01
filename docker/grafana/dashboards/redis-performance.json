@@ -25,8 +25,8 @@
       "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
       "gridPos": { "h": 8, "w": 8, "x": 16, "y": 0 },
       "id": 3,
-      "targets": [{ "expr": "sum(rate(http_server_requests_seconds_count{application=\"redis-performance\"}[5m]))", "refId": "A" }],
-      "title": "Spring HTTP Request Rate",
+      "targets": [{ "expr": "sum(rate(http_server_requests_seconds_count{application=\"redis-performance\",method=\"GET\",uri=\"/videos/{id}\"}[$__rate_interval]))", "refId": "A" }],
+      "title": "Video GET Request Rate",
       "type": "timeseries"
     },
     {
@@ -73,13 +73,39 @@
       "targets": [{ "expr": "redis_up", "refId": "A" }],
       "title": "Redis Availability",
       "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "ops" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 16 },
+      "id": 9,
+      "targets": [{ "expr": "sum(rate(video_find_by_id_db_load_total{application=\"redis-performance\"}[$__rate_interval]))", "refId": "A" }],
+      "title": "Video DB Load Rate",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 24 },
+      "id": 10,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "targets": [{ "expr": "sum(increase(video_find_by_id_db_load_total{application=\"redis-performance\"}[$__range]))", "refId": "A" }],
+      "title": "Video DB Loads In Selected Range",
+      "type": "stat"
     }
   ],
-  "refresh": "15s",
+  "refresh": "5s",
   "schemaVersion": 41,
   "tags": ["redis", "mysql", "spring"],
   "templating": { "list": [] },
-  "time": { "from": "now-1h", "to": "now" },
+  "time": { "from": "now-15m", "to": "now" },
   "title": "Redis Performance",
   "uid": "redis-performance",
   "version": 1

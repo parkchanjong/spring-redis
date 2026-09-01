@@ -65,4 +65,12 @@ K6_WEB_DASHBOARD=true k6 run k6/video-cache-stampede.js
 
 캐시 활성화 시 정상 DB 응답 시간이 Lock 대기 시간 1초 이내라는 전제에서, 부하 구간의 DB 조회 증가량은 1이어야 합니다. p95는 머신과 실행 상태에 따라 달라지므로 고정된 통과 기준으로 사용하지 않고 실측값을 비교합니다.
 
-위 결과는 2026-08-31 로컬 Docker 환경에서 측정했습니다.
+### 지속 부하 관측
+
+Grafana에서 캐시 적용 전후의 요청률과 DB 조회율을 비교하려면 아래 시나리오를 실행합니다.
+
+```bash
+K6_WEB_DASHBOARD=true k6 run k6/video-cache-sustained.js
+```
+
+스크립트는 캐시를 채운 동일 영상에 초당 50회씩 60초간 요청합니다. 캐시 활성 상태에서는 30초 fresh TTL 뒤 stale 갱신이 한 번 일어나므로 DB 조회 증가량이 적게 나타나며, 비활성 상태에서는 대부분의 요청이 DB를 조회합니다. 두 설정에서 각각 실행한 뒤 Grafana의 15분 시간 범위에서 `Video GET Request Rate`, `Video DB Load Rate`, `Video DB Loads In Selected Range` 패널을 비교합니다. Spring 애플리케이션 지표는 이 관측을 위해 1초 간격으로 수집됩니다.
