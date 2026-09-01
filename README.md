@@ -58,7 +58,7 @@ k6 run k6/video-cache-stampede.js
 다른 사전 준비 영상을 사용할 경우 `VIDEO_ID`를 지정합니다.
 
 ```bash
-VIDEO_ID=12345 k6 run k6/video-cache-stampede.js
+VIDEO_ID=12345 K6_WEB_DASHBOARD=true k6 run k6/video-cache-stampede.js
 ```
 
 동일한 로컬 환경에서 캐시 비활성·활성 실행을 각각 수행하고, k6 요약의 `http_req_duration` p95와 출력된 DB 조회 증가량을 아래 표에 기록합니다.
