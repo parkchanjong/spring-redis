@@ -49,8 +49,10 @@ VIDEO_CACHE_ENABLED=true ./gradlew bootRun
 Docker Compose와 애플리케이션을 실행한 뒤 [k6](https://grafana.com/docs/k6/latest/set-up/install-k6/)가 설치된 환경에서 아래 명령을 실행합니다.
 
 ```bash
-k6 run k6/video-cache-stampede.js
+K6_WEB_DASHBOARD=true k6 run k6/video-cache-stampede.js
 ```
+
+명령이 실행되는 동안 `http://localhost:5665/ui/?endpoint=/`에서 k6 요청 수, 응답 시간, 체크 성공률을 실시간으로 확인할 수 있습니다. 이 대시보드는 k6 실행 프로세스에 포함되므로 테스트가 종료되면 더 이상 접속할 수 없습니다.
 
 스크립트는 회원과 영상을 HTTP API로 자동 생성한 뒤, 해당 영상의 캐시를 채우고 31초 대기해 stale 상태로 만듭니다. 이후 동일 영상에 200개 동시 요청을 보내며, 실행 마지막에는 Actuator의 `video_find_by_id_db_load_total` 증가량을 출력합니다. 실행마다 테스트 회원과 동영상 데이터가 추가됩니다.
 

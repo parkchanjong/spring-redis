@@ -225,8 +225,10 @@ MySQL, Redis, Grafana 비밀번호는 Compose와 애플리케이션 환경 변�
 ### 5.3 부하 시험
 
 ```bash
-k6 run k6/video-cache-stampede.js
+K6_WEB_DASHBOARD=true k6 run k6/video-cache-stampede.js
 ```
+
+실행 중에는 `http://localhost:5665/ui/?endpoint=/`에서 요청 수, 응답 시간, 체크 성공률을 확인합니다. 대시보드는 k6 프로세스가 실행되는 동안에만 제공됩니다.
 
 시나리오는 HTTP API로 회원과 동영상을 자동 생성한 뒤 해당 동영상의 캐시를 채우고, 31초를 기다려 stale 상태로 만듭니다. 이후 200개 동시 요청을 한 번씩 실행하며 종료 시 Actuator에서 DB 조회 Counter의 증가량을 출력합니다. 실행마다 테스트 회원과 동영상 데이터가 추가됩니다.
 
