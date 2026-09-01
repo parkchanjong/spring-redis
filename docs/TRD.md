@@ -225,11 +225,10 @@ MySQL, Redis, Grafana 비밀번호는 Compose와 애플리케이션 환경 변�
 ### 5.3 부하 시험
 
 ```bash
-docker compose exec -T mysql sh -c 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' < k6/seed-video-cache-stampede.sql
 k6 run k6/video-cache-stampede.js
 ```
 
-시나리오는 대상 동영상의 캐시를 채운 뒤 31초를 기다려 stale 상태로 만들고, 200개 동시 요청을 한 번씩 실행합니다. 종료 시 Actuator에서 DB 조회 Counter의 증가량을 출력합니다. 다른 준비된 영상을 사용할 때는 `VIDEO_ID`를 지정합니다.
+시나리오는 HTTP API로 회원과 동영상을 자동 생성한 뒤 해당 동영상의 캐시를 채우고, 31초를 기다려 stale 상태로 만듭니다. 이후 200개 동시 요청을 한 번씩 실행하며 종료 시 Actuator에서 DB 조회 Counter의 증가량을 출력합니다. 실행마다 테스트 회원과 동영상 데이터가 추가됩니다.
 
 ---
 
